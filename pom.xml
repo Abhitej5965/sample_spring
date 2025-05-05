@@ -8,10 +8,10 @@
 		<version>3.1.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.ecommerce</groupId>
-	<artifactId>ecommerce-service</artifactId>
+	<groupId>com.example</groupId>
+	<artifactId>sample_spring</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>ecommerce-service</name>
+	<name>sample_spring</name>
 	<description>E-commerce Service with Spring Boot</description>
 	<url/>
 	<licenses>
