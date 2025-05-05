@@ -23,12 +23,6 @@ public class Product {
     private Integer stockQuantity;
     
     @Lob
-    @Column(name = "product_metadata")
-    private byte[] productMetadata;
-    
-    @Column(name = "metadata_file_name")
-    private String metadataFileName;
-    
-    @Column(name = "metadata_file_type")
-    private String metadataFileType;
+    @Column(name = "metadata")
+    private byte[] metadata;
 } 
