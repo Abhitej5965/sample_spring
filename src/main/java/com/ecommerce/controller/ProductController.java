@@ -2,10 +2,15 @@ package com.ecommerce.controller;
 
 import com.ecommerce.model.Product;
 import com.ecommerce.service.ProductService;
+import com.ecommerce.dto.ProductDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -27,16 +32,41 @@ public class ProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        return productService.saveProduct(product);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Product> createProduct(
+            @RequestPart("product") ProductDTO productDTO,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+        try {
+            Product newProduct = productService.saveProduct(productDTO, file);
+            return ResponseEntity.ok(newProduct);
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Product> updateProduct(
+            @PathVariable Long id,
+            @RequestPart("product") ProductDTO productDTO,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
-            Product updatedProduct = productService.updateProduct(id, product);
+            Product updatedProduct = productService.updateProduct(id, productDTO, file);
             return ResponseEntity.ok(updatedProduct);
+        } catch (RuntimeException | IOException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/{id}/metadata")
+    public ResponseEntity<byte[]> getProductMetadata(@PathVariable Long id) {
+        try {
+            byte[] metadata = productService.getProductMetadata(id);
+            Product product = productService.getProductById(id).orElseThrow();
+            
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + product.getMetadataFileName() + "\"")
+                    .contentType(MediaType.parseMediaType(product.getMetadataFileType()))
+                    .body(metadata);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
