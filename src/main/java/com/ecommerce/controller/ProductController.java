@@ -2,6 +2,7 @@ package com.ecommerce.controller;
 
 import com.ecommerce.model.Product;
 import com.ecommerce.service.ProductService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,9 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+    
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @GetMapping
     public List<Product> getAllProducts() {
@@ -32,9 +36,10 @@ public class ProductController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Product> createProduct(
-            @RequestPart("product") Product product,
+            @RequestPart("product") String productJson,
             @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
+            Product product = objectMapper.readValue(productJson, Product.class);
             Product newProduct = productService.saveProduct(product, file);
             return ResponseEntity.ok(newProduct);
         } catch (IOException e) {
@@ -45,9 +50,10 @@ public class ProductController {
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Product> updateProduct(
             @PathVariable Long id,
-            @RequestPart("product") Product product,
+            @RequestPart("product") String productJson,
             @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
+            Product product = objectMapper.readValue(productJson, Product.class);
             Product updatedProduct = productService.updateProduct(id, product, file);
             return ResponseEntity.ok(updatedProduct);
         } catch (RuntimeException | IOException e) {

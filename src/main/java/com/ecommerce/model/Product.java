@@ -2,6 +2,7 @@ package com.ecommerce.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.Type;
 
 @Data
 @Entity
@@ -22,7 +23,6 @@ public class Product {
     @Column(name = "stock_quantity")
     private Integer stockQuantity;
     
-    @Lob
-    @Column(name = "metadata")
+    @Column(name = "metadata", columnDefinition = "bytea")
     private byte[] metadata;
 } 
