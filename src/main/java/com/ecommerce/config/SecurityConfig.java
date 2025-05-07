@@ -18,7 +18,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())  // Disable CSRF for API endpoints
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/users/**").permitAll()  // Allow all requests to /users endpoints
+                .requestMatchers("/api/**").permitAll()  // Allow all requests to /users endpoints
                 .anyRequest().authenticated()  // Require authentication for all other endpoints
             )
             .httpBasic(withDefaults());  // Use HTTP Basic authentication

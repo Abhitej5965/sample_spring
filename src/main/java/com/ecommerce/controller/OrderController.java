@@ -4,6 +4,7 @@ import com.ecommerce.model.Order;
 import com.ecommerce.model.User;
 import com.ecommerce.service.OrderService;
 import com.ecommerce.service.UserService;
+import com.ecommerce.dto.OrderedProductDetailsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -94,6 +95,16 @@ public class OrderController {
         try {
             orderService.deleteOrder(id);
             return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/{id}/products")
+    public ResponseEntity<List<OrderedProductDetailsDTO>> getOrderedProductsDetails(@PathVariable Long id) {
+        try {
+            List<OrderedProductDetailsDTO> products = orderService.getOrderedProductsDetails(id);
+            return ResponseEntity.ok(products);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }

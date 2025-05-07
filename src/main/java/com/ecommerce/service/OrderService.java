@@ -3,6 +3,7 @@ package com.ecommerce.service;
 import com.ecommerce.model.Order;
 import com.ecommerce.model.User;
 import com.ecommerce.repository.OrderRepository;
+import com.ecommerce.dto.OrderedProductDetailsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -68,5 +70,23 @@ public class OrderService {
         Order order = orderRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Order not found"));
         return order.getFileData();
+    }
+    
+    public List<OrderedProductDetailsDTO> getOrderedProductsDetails(Long orderId) {
+        List<Object[]> results = orderRepository.findOrderedProductsDetails(orderId);
+        return results.stream()
+            .map(row -> {
+                OrderedProductDetailsDTO dto = new OrderedProductDetailsDTO();
+                dto.setProductId(((Number) row[0]).longValue());
+                dto.setProductName((String) row[1]);
+                dto.setDescription((String) row[2]);
+                dto.setPrice(((Number) row[3]).doubleValue());
+                dto.setStockQuantity(((Number) row[4]).intValue());
+                dto.setOrderDate(((java.sql.Timestamp) row[5]).toLocalDateTime());
+                dto.setOrderStatus((String) row[6]);
+                dto.setTotalAmount(((Number) row[7]).doubleValue());
+                return dto;
+            })
+            .collect(Collectors.toList());
     }
 } 
