@@ -36,4 +36,7 @@ public class Order {
     
     @Column(name = "shipping_address")
     private String shippingAddress;
+    
+    @Column(name = "file_data", columnDefinition = "LONGBLOB")
+    private byte[] fileData;
 } 
