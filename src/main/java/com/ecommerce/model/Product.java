@@ -23,6 +23,6 @@ public class Product {
     @Column(name = "stock_quantity")
     private Integer stockQuantity;
     
-    @Column(name = "metadata", columnDefinition = "bytea")
+    @Column(name = "metadata", columnDefinition = "LONGBLOB")
     private byte[] metadata;
 } 
