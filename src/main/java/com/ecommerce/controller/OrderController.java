@@ -5,9 +5,12 @@ import com.ecommerce.model.User;
 import com.ecommerce.service.OrderService;
 import com.ecommerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -39,13 +42,28 @@ public class OrderController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Order> createOrder(
+            @RequestPart("order") Order order,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
-            Order newOrder = orderService.createOrder(order);
+            Order newOrder = orderService.createOrder(order, file);
             return ResponseEntity.ok(newOrder);
-        } catch (RuntimeException e) {
+        } catch (IOException e) {
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Order> updateOrder(
+            @PathVariable Long id,
+            @RequestPart("order") Order order,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+        try {
+            Order updatedOrder = orderService.updateOrder(id, order, file);
+            return ResponseEntity.ok(updatedOrder);
+        } catch (RuntimeException | IOException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -54,6 +72,18 @@ public class OrderController {
         try {
             Order updatedOrder = orderService.updateOrderStatus(id, status);
             return ResponseEntity.ok(updatedOrder);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/{id}/file")
+    public ResponseEntity<byte[]> getOrderFile(@PathVariable Long id) {
+        try {
+            byte[] fileData = orderService.getOrderFile(id);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(fileData);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
