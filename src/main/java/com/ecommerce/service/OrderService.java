@@ -4,6 +4,7 @@ import com.ecommerce.model.Order;
 import com.ecommerce.model.User;
 import com.ecommerce.repository.OrderRepository;
 import com.ecommerce.dto.OrderedProductDetailsDTO;
+import com.ecommerce.dto.OrderSummaryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -88,5 +89,23 @@ public class OrderService {
                 return dto;
             })
             .collect(Collectors.toList());
+    }
+    
+    public OrderSummaryDTO getOrderSummaryWithProductNames(Long orderId) {
+        Object[] result = orderRepository.findOrderSummaryWithProductNames(orderId);
+        if (result == null) {
+            throw new RuntimeException("Order not found");
+        }
+        
+        OrderSummaryDTO dto = new OrderSummaryDTO();
+        dto.setOrderId(((Number) result[0]).longValue());
+        dto.setOrderDate(((java.sql.Timestamp) result[1]).toLocalDateTime());
+        dto.setOrderStatus((String) result[2]);
+        dto.setTotalAmount(((Number) result[3]).doubleValue());
+        dto.setProductNames((String) result[4]);
+        dto.setProductPrices((String) result[5]);
+        dto.setTotalProducts(((Number) result[6]).intValue());
+        
+        return dto;
     }
 } 

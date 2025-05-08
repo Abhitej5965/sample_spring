@@ -5,6 +5,7 @@ import com.ecommerce.model.User;
 import com.ecommerce.service.OrderService;
 import com.ecommerce.service.UserService;
 import com.ecommerce.dto.OrderedProductDetailsDTO;
+import com.ecommerce.dto.OrderSummaryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -105,6 +106,16 @@ public class OrderController {
         try {
             List<OrderedProductDetailsDTO> products = orderService.getOrderedProductsDetails(id);
             return ResponseEntity.ok(products);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/{id}/summary")
+    public ResponseEntity<OrderSummaryDTO> getOrderSummary(@PathVariable Long id) {
+        try {
+            OrderSummaryDTO summary = orderService.getOrderSummaryWithProductNames(id);
+            return ResponseEntity.ok(summary);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }

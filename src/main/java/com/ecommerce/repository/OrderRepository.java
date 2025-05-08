@@ -21,4 +21,21 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         WHERE o.id = :orderId
         """, nativeQuery = true)
     List<Object[]> findOrderedProductsDetails(@Param("orderId") Long orderId);
+    
+    @Query(value = """
+        SELECT 
+            o.id as order_id,
+            o.order_date,
+            o.order_status,
+            o.total_amount,
+            GROUP_CONCAT(p.name SEPARATOR ', ') as product_names,
+            GROUP_CONCAT(p.price SEPARATOR ', ') as product_prices,
+            COUNT(p.id) as total_products
+        FROM orders o
+        JOIN order_products op ON o.id = op.order_id
+        JOIN products p ON op.product_id = p.id
+        WHERE o.id = :orderId
+        GROUP BY o.id, o.order_date, o.order_status, o.total_amount
+        """, nativeQuery = true)
+    Object[] findOrderSummaryWithProductNames(@Param("orderId") Long orderId);
 } 
