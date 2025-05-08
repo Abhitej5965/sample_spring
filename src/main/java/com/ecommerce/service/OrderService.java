@@ -93,18 +93,21 @@ public class OrderService {
     
     public OrderSummaryDTO getOrderSummaryWithProductNames(Long orderId) {
         Object[] result = orderRepository.findOrderSummaryWithProductNames(orderId);
-        if (result == null) {
+        if (result == null || result.length == 0) {
             throw new RuntimeException("Order not found");
         }
         
+        // Get the inner array which contains the actual data
+        Object[] dataArray = (Object[]) result[0];
+        
         OrderSummaryDTO dto = new OrderSummaryDTO();
-        dto.setOrderId(((Number) result[0]).longValue());
-        dto.setOrderDate(((java.sql.Timestamp) result[1]).toLocalDateTime());
-        dto.setOrderStatus((String) result[2]);
-        dto.setTotalAmount(((Number) result[3]).doubleValue());
-        dto.setProductNames((String) result[4]);
-        dto.setProductPrices((String) result[5]);
-        dto.setTotalProducts(((Number) result[6]).intValue());
+        dto.setOrderId(((Number) dataArray[0]).longValue());
+        dto.setOrderDate(((java.sql.Timestamp) dataArray[1]).toLocalDateTime());
+        dto.setOrderStatus((String) dataArray[2]);
+        dto.setTotalAmount(((Number) dataArray[3]).doubleValue());
+        dto.setProductNames((String) dataArray[4]);
+        dto.setProductPrices((String) dataArray[5]);
+        dto.setTotalProducts(((Number) dataArray[6]).intValue());
         
         return dto;
     }
