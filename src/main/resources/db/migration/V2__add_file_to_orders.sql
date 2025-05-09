@@ -1,3 +1,3 @@
 -- Add file column to orders table
 ALTER TABLE orders
-ADD COLUMN file_data BYTEA; 
+ADD COLUMN file_data LONGBLOB; 

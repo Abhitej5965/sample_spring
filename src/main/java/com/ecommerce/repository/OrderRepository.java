@@ -28,8 +28,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             o.order_date,
             o.order_status,
             o.total_amount,
-            string_agg(p.name, ', ') as product_names,
-            string_agg(p.price::text, ', ') as product_prices,
+            GROUP_CONCAT(p.name) as product_names,
+            GROUP_CONCAT(p.price) as product_prices,
             COUNT(p.id) as total_products
         FROM orders o
         JOIN order_products op ON o.id = op.order_id
